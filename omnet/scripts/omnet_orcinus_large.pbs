@@ -1,0 +1,22 @@
+#!/bin/bash
+# This is the pbs file for omnet when running on orcinus.westgrid.ca
+# remove the qos-debug line to access default queue
+
+#PBS -l procs=1
+#PBS -l walltime=52:00:00
+#PBS -l mem=2048mb
+#PBS -r n
+#PBS -M username@email.address
+#PBS -m ea
+#PBS -j oe
+#PBS -V
+cd $PBS_O_WORKDIR
+STORE="/global/scratch/<username>/store"
+ECODE=1
+
+mkdir -p $STORE/$ARG1/sim/r$ARG2
+
+./omnet_run $ARG1 $ARG2 $ARG3 &> $STORE/$ARG1/sim/r$ARG2/rout-$ARG1-$ARG2.log
+ECODE=$?
+
+exit $ECODE

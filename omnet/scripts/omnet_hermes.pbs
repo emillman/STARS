@@ -1,0 +1,21 @@
+#!/bin/bash
+# This is the pbs file for omnet when running on hermes.westgrid.ca
+# remove the qos-debug line to access default queue
+
+#PBS -q hermes
+#PBS -l walltime=0:15:00
+#PBS -l mem=2048mb
+#PBS -l procs=1
+#PBS -r n
+#PBS -j oe
+#PBS -M emillman@ece.uvic.ca
+#PBS -m ea
+#PBS -V
+cd $PBS_O_WORKDIR
+pwd
+STORE="/global/scratch/emillman"
+cd $STORE/$ARG1
+pwd
+ls -al
+echo "omnet time"
+time ./omnet_run $ARG1 $ARG2 $ARG3 nocompress &> sim/rout-$ARG1-$ARG2.log

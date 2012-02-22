@@ -1,0 +1,11 @@
+#!/bin/bash
+source env.sh
+
+echo "registering user's public key with STARS"
+
+scp $HOME/.ssh/id_rsa.pub $RHOST:~/temp.pk
+ssh $RHOST 'cat temp.pk >> ~/.ssh/authorized_keys; rm temp.pk'
+echo "regisering clts's public key with user"
+scp $RHOST:~/.ssh/id_rsa.pub $HOME/temp.pk
+cat $HOME/temp.pk >> $HOME/.ssh/authorized_keys 
+rm $HOME/temp.pk

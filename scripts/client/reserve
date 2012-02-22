@@ -1,0 +1,18 @@
+#!/bin/bash
+#
+# reserve worker by id
+# param 1: worker id
+
+if [ $# -eq 1 ]; then
+	echo reserving worker $1
+	if [ $RHOST ]; then
+		
+		LINE="ssh $RHOST 'touch $DPATH/work/$1.reserve'"
+	else
+		LINE="touch $DPATH/work/$1.reserve"
+	fi;
+	eval $LINE
+else
+        echo "usage: ./reserve <worker id>"
+        echo "to obtain the worker id ./info"
+fi;

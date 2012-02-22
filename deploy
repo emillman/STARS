@@ -1,0 +1,68 @@
+#!/bin/bash
+#
+# Copyright (C) 2011 Eamon Millman
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program; if not, see <http://www.gnu.org/licenses/>.
+#
+
+USER=""
+SUFFIX=""
+
+if [ $# -eq 2 ]; then
+
+	if [ ! -r nodelist ]; then
+		echo "missing nodelist file containing names of nodes."
+		exit 1
+	fi
+
+	echo "deploying $1 to node(s):$2"
+
+	rm -f hosts
+	FIRST="1"
+	for n in $( cat nodelist ); do
+		if [ $FIRST == "1" ]; then
+			echo ${n}$SUFFIX slots=2 max-slots=2 > hosts
+			FIRST="2"
+		else
+			echo ${n}$SUFFIX slots=1 max-slots=1 >> hosts
+		fi;
+	done;
+	echo "created hosts file used by mpi"
+
+	for n in $( cat nodelist ); do
+		#echo $USER
+		if [ ! $USER == "" ]; then
+			n="$USER@$n"
+		fi
+		echo Setting up $n:$1
+		LINE="ssh $n 'rm -rf $2; mkdir -p $2'"
+		#echo $LINE
+		eval $LINE
+
+		#echo configuring hostname as $n
+		scp hosts $n:$2
+		LINE="ssh $n 'echo ${n}$SUFFIX > $2/hostname'"
+		#echo $LINE
+		eval $LINE
+
+		#echo sending over deployment image
+		scp $1 $n:$2
+
+		LINE="ssh $n 'cd $2; tar zxf $1; rm -rf $1' &> /dev/null"
+		eval $LINE
+	done;
+else
+	echo "usage: ./deploy stars.tar.gz install/path"
+	exit 1
+fi

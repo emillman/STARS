@@ -1,0 +1,22 @@
+#!/bin/bash
+#
+# shows information about currently running processes 
+
+source env.sh
+
+if [ $RHOST ]; then
+	if [ $# -eq 0 ]; then
+		LINE="ssh $RHOST 'cat $DPATH/log/info.log'"
+	fi;
+	if [ $# -eq 1 ]; then
+		LINE="ssh $RHOST 'cat $DPATH/out-stars.log | grep \"$1\"'"
+	fi;
+else
+	if [ $# -eq 0 ]; then
+		LINE="cat $DPATH/log/info.log"
+	fi;
+	if [ $# -eq 1 ]; then
+		LINE="cat $RPATH/out-stars.log | grep \'$1\'"
+	fi;
+fi;
+eval $LINE

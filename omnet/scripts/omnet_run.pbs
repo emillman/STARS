@@ -1,0 +1,30 @@
+#!/bin/bash
+cd $PBS_O_WORKDIR
+STORE="/global/scratch/emillman/store"
+LOCAL="/tmp/emillman"
+ECODE=1
+pwd
+
+mkdir -p $LOCAL/$ARG1 && cd $LOCAL/$ARG1 && mkdir -p results
+pwd
+
+echo "tar time"
+time tar zxf $STORE/$ARG4.tar.gz
+echo "decompressed"
+ls -al
+
+echo "omnet time"
+time ./omnet_run $ARG1 $ARG2 $ARG3 &> rout-$ARG1-$ARG2.log
+RCODE=$?
+mkdir -p $STORE/$ARG1/sim
+echo "small mv time"
+time mv rout-$ARG1-$ARG2.log $STORE/$ARG1/sim/
+
+if [ $RCODE -eq 0 ]; then
+	mkdir -p $STORE/$ARG1/sim
+	echo "large mv time"
+	time mv results/*_${ARG1}_r$ARG2.tar.gz $STORE/$ARG1/sim/
+	ECODE=0
+fi
+rm -f results/*-${ARG1}-$ARG2.log results/$ARG1-$ARG2.sca
+exit $ECODE

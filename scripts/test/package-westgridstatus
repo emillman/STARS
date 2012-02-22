@@ -1,0 +1,21 @@
+#!/bin/bash
+
+source env.sh
+
+rm -rf .package-westgridstatus
+mkdir -p $EXPERIMENTPATH/.package-westgridstatus
+cd $EXPERIMENTPATH/.package-westgridstatus
+
+mkdir py
+cp $EXPERIMENTPATH/py/westgridstatusprocess.py py/
+cp $EXPERIMENTPATH/py/westgridprocess.py py/
+cp $EXPERIMENTPATH/py/wg_task.py py/
+cp $EXPERIMENTPATH/py/wg_qstattask.py py/
+cp $EXPERIMENTPATH/py/wg_qsubtask.py py/
+cp $EXPERIMENTPATH/py/wg_qdeltask.py py/
+
+tar zcf westgridstatus.tar.gz *
+mv westgridstatus.tar.gz $EXPERIMENTPATH
+
+cd $EXPERIMENTPATH
+rm -rf .package-westgridstatus

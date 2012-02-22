@@ -1,0 +1,22 @@
+#!/bin/bash
+#
+# modify process workers value
+# param 1: process id
+# param 2: new workers, interger value greater than zero.
+#		how many nodes to allocate
+
+source env.sh
+
+if [ $# -eq 1 ]; then
+	echo setting process $1 to use $2 nodes
+	if [ $RHOST ]; then
+		
+		LINE="ssh $RHOST 'touch $RPATH/work/$1.$2.workers'"
+	else
+		LINE="touch $RPATH/work/$1.$2.workers"
+	fi;
+	eval $LINE
+else
+        echo "usage: ./workers <process id> <min workers>"
+        echo "to obtain the process id run ./info"
+fi;

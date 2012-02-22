@@ -1,0 +1,3 @@
+package stars;
+
+@license(LGPL);

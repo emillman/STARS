@@ -1,0 +1,59 @@
+#!/bin/bash
+#
+# Copyright (C) 2011 Eamon Millman
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program; if not, see <http://www.gnu.org/licenses/>.
+#
+
+CWD=$PWD
+
+OMNET_PATH=""
+
+echo $* | grep omnet &> /dev/null
+if [ $? -eq 0 ]; then
+	USE_OMNET="0"
+fi
+
+if [[ $USE_OMNET && ! $OMNET_PATH ]]; then
+	echo "must specify OMNET_PATH if using omnet"
+	exit 1
+fi
+
+CPU_COUNT="1"
+
+if [ ! -r env.sh ]; then
+	echo "#!/bin/bash" > env.sh
+	echo CWD=\$PWD >> env.sh
+	echo export CWD >> env.sh
+	if [ $USE_OMNET ]; then
+		echo PATH=$OMNET_PATH/bin:\$PATH >> env.sh
+		echo export PATH >> env.sh
+	fi
+	echo OMNET_PATH=$OMNET_PATH >> env.sh
+	echo export OMNET_PATH >> env.sh
+	echo J=$CPU_COUNT >> env.sh
+	echo export J >> env.sh
+fi
+
+source env.sh
+
+if [ $USE_OMNET ]; then
+	if [ ! -d $OMNET_PATH ]; then
+		echo "Failed to locate omnet installation at $OMNET_PATH"
+		exit 1
+	fi
+	cd omnet
+	./build release makefiles
+	cd ..
+fi

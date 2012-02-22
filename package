@@ -1,0 +1,136 @@
+#!/bin/bash
+#
+# Copyright (C) 2011 Eamon Millman
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program; if not, see <http://www.gnu.org/licenses/>.
+#
+
+AUTO_FILENAME="stars.tar.gz"
+CLIENT_FILENAME="stars-client.tar.gz"
+
+echo $* | grep auto &> /dev/null
+if [ $? -eq 0 ]; then
+	PACK_AUTO="0"
+fi
+echo $* | grep client &> /dev/null
+if [ $? -eq 0 ]; then
+	PACK_CLIENT="0"
+fi
+echo $* | grep deps &> /dev/null
+if [ $? -eq 0 ]; then
+	PACK_DEPS="0"
+fi
+if [[ ! $PACK_AUTO && ! $PACK_CLIENT ]]; then
+	PACK_AUTO="0"
+	PACK_CLIENT="0"
+fi
+echo $* | grep cpu_ht &> /dev/null
+if [ $? -eq 0 ]; then
+	CPU_HT="0"
+fi
+echo $* | grep cpu_one &> /dev/null
+if [ $? -eq 0 ]; then
+	CPU_ONE="0"
+fi
+
+if [ $PACK_AUTO ]; then
+	rm -rf .package
+	mkdir .package
+
+	if [ $PACK_DEPS ]; then
+		echo packaging binaries
+		mkdir -p .package/bin
+		cp -r dep/bin/* .package/bin/
+
+		echo packaging libraries
+		mkdir -p .package/lib
+		cp -r dep/lib/* .package/lib/
+
+		echo packaging misc files and data
+		mkdir -p .package/share
+		cp -r dep/share/* .package/share/
+	fi
+
+	echo packaging utility scripts
+	mkdir -p .package/scripts
+	cp scripts/stars .package/scripts/
+	cp scripts/starsbg .package/scripts/
+	cp scripts/mpicall .package/scripts/
+
+	echo packaging python modules
+	mkdir -p .package/py
+	cp -r py/* .package/py/
+
+	#cp stars.config .package/
+
+	cd .package
+	mkdir work
+	mkdir proc
+	mkdir dep
+	mkdir log
+
+	cd py
+	ln -s util.py cltsutils.py
+	cd ..
+	#echo $PWD
+	
+	if [ $CPU_HT ]; then
+		echo "configuring package for hyper-threaded cpu system"
+		touch cpu_ht
+	elif [ $CPU_ONE ]; then
+		echo "configuring package for single cpu system"
+		touch cpu_one
+	fi
+
+	chmod 755 scripts/*
+	mv scripts/* ./
+
+	chmod -R 777 work
+	chmod -R 755 log
+	chmod -R 700 dep
+	chmod -R 700 proc
+	chmod -R 700 py
+
+	if [ $PACK_DEPS ]; then
+		chmod -R 700 lib
+		chmod -R 700 bin
+	fi
+
+	chmod 700 shutdown
+	chmod 700 shutdownnow
+	chmod 700 stars
+	chmod 700 starsbg
+	chmod 700 mpicall
+
+	echo archiving
+	tar zcfh $AUTO_FILENAME *
+	mv $AUTO_FILENAME ../
+
+	cd ..
+	rm -rf .package
+fi
+
+if [ $PACK_CLIENT ]; then
+	rm -rf .package
+	mkdir .package
+
+	cp scripts/client/* .package/
+	cd .package
+	
+	chmod 744 *
+	tar zcf $CLIENT_FILENAME *
+	mv $CLIENT_FILENAME ../
+
+	rm -rf .package
+fi

@@ -1,0 +1,22 @@
+# this is the template workfile used to run experiments through the STARS framework
+# it requires a number of experiment specific configuration details. You should copy,
+# and then read and modify the copy as required leaving this as a template for new
+# experiments.
+
+[general]
+name=long name for process, shown in ./info output
+# this points to the location of the resource package for your experiment
+# the value may change for different experiments (i.e. manet-olsr1.tar.gz)
+resources=/home/emillman/masters/experiment/manet-wg.tar.gz
+# this is the path relative to the resource package where any custom python
+# code is kept
+modulepath=py
+# this is the name of the experiment process to begin
+modulename=WG_AnalysisProcess
+
+[process]
+# process related configruation options go here
+# these are unique to each process
+host=orcinus.westgrid.ca
+user=emillman
+pub_key=~/.ssh/id_rsa

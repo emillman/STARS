@@ -1,0 +1,150 @@
+[general]
+name=long name for process, shown in ./info output
+# this points to the location of the resource package for your experiment
+# the value may change for different experiments (i.e. manet-olsr1.tar.gz)
+resources=/home/emillman/masters/manet/manet-wg.tar.gz
+# this is the path relative to the resource package where any custom python
+# code is kept
+modulepath=py
+# this is the name of the experiment process to begin
+modulename=WG_AnalysisProcess
+results=/global/scratch/emillman/store
+
+[process]
+# process related configruation options go here
+# these are unique to each process
+host=orcinus.westgrid.ca
+user=emillman
+key=~/.ssh/id_rsa
+# this is the name of your simulation configuration, should be unique
+# relative to the value given for [genera]:results
+config=SmallBase
+# this is the name of your analysis configuration
+script=SmallBase
+# the total number of runs to perform before giving up
+runs=75
+# the number of repeats of each configuration to perform
+# this is the runs divided by the parameters
+repeat=75
+# this is how many repeats to run prior to first analysis
+# > 0
+start_repeat=25
+# this is the most repeats to be requested at a time per
+# parameter. > 0
+max_more=50
+# the maximum length of time to run the simulation
+# tmax > 0; given in seconds
+tmax=60
+# uncomment the line below to enable surface engeration, framesend
+# instrument must be set to true in the config section and surfaceFeatures
+#  should be declared in the script section.
+surface
+
+[SurfaceTask]
+# CPU requirements for the surface process
+slots=1
+
+[MatlabTask]
+# CPU requirements for the analysis process
+slots=1
+
+[OmnetTask]
+# CPU requirements for the simulation process
+slots=1
+
+[Script SmallBase]
+# this is the analysis script, it should be a good default to use
+# see experiment/matlab/init.m for a full list of analysis parameters
+cache_limit_bytes = 3*1024^3;
+# this is the minimum ergodic size of all features selected for a 
+# parameter to be considered complete
+et_minsize = 15;
+# hide common warnings
+warning off analysis:missingConfig
+warning off analysis:missingFile
+# call the experiment specific features to process
+# see experiment/matlab/util/featureNew.m to make new features or
+# depending on which features are processed the [Config] section needs 
+# to enable the proper instruments.
+#
+# comment out the lines you dont want, uncomment those you do
+# the defaults below should provide application and network 
+# features commonly found in MANET research.
+#
+# this enables application level: app_pdr, etc...
+applicationFeatures;
+# this enables network level: ipapp_pdr, etc...
+networkFeatures;
+# this enables link level: frame_recv_snr_data, etc...
+linkFeatures;
+# this enables world level: manet_group_size, host_pos, etc...
+%worldFeatures;
+# these set the parameters needed to create surfaces
+# window slice width in seconds
+sf_delta_t = 1;
+# number of slices in each window
+sf_window = 10;
+# surface resolution in meters
+sf_delta_m = 5;
+# width of surface in meters
+sf_width = 600;
+# height of surface in meters
+sf_height = 300;
+# this defines surfaces to generate, requires framesend to be
+# enabled.
+surfaceFeatures;
+
+
+[Config SmallBase]
+# this is the simulation configuration
+# include the base library, there is Manet, Attacker, and Chain 
+# all with the suffix Small (i.e. ManetSmall)
+# defined in manet/model/simulations/manet.ini
+# the network is defined in manet/model/simulations/manet.ned
+extends = ManetSmall
+# set the routing protocol to use, tested values are:
+# dymo, dymo_old, aodv, olsr1, olsr2, olsr3, olsr4, olsr5, olsr6, olsr7
+include dymo.ini
+# enable the required instrumentation based on the analysis features
+# enabled in the [Script] section.
+#
+# to reduce size of experiment results only enable instruments for the
+# features selected above. 
+#
+# depending on analysis above certain loggers need to be enabled
+# applicationFeatures
+*.logger.appsend.enabled = true
+*.logger.apprecv.enabled = true
+*.logger.appiat.enabled = true
+# networkFeatures
+*.logger.ipappsend.enabled = true
+*.logger.ipapprecv.enabled = true
+*.logger.ipsend.enabled = true
+*.logger.iprecv.enabled = true
+*.logger.iproute.enabled = true
+# linkFeatures
+*.logger.framesend.enabled = true
+*.logger.framerecv.enabled = true
+*.logger.framelost.enabled = true
+# worldFeatures
+*.logger.hostpos.enabled = false
+*.logger.hostwp.enabled = false
+*.logger.manetgroup.enabled = false
+*.logger.manetlink.enabled = false
+# set the amount of memory to use for buffering each instrument
+# the value should be: 3GB / # of enabled instruments
+*.logger.*.maxBytes = 200MB
+# set the mobility parameters for the network, 
+# full list in manet/model/src/mobility/TerminalMobility.ned
+*.host[*].mobility.startTime = uniform( 0, 0.1, 1 )*1s
+# set the speed of hosts, can be random
+*.host[*].mobility.speed = 5
+# set the traffic parameters for the network,
+# full list in manet/model/src/application/udpapp/TerminalApp.ned
+*.host[*].udpApp[*].startTime = uniform( 0s, 16s, 2 )
+#*.host[*].udpApp[*].requestOn = 8s
+#*.host[*].udpApp[*].requestOn = exponential( 7.5, 2 )*1s
+*.host[*].udpApp[*].requestOn = pareto_shifted( 3, 5, 0, 2 )*1s
+*.host[*].udpApp[*].requestOff = 0s
+*.host[*].udpApp[*].requestBytes = 2KB
+*.host[*].udpApp[*].segmentBytes = 1KB

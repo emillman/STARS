@@ -1,0 +1,44 @@
+#!/bin/bash
+#
+# gracefully stop the process 
+# param 1: process id
+source env.sh
+
+if [ $# -eq 1 ]; then
+	echo starting process workfile $1
+	if [ $RHOST ]; then
+		LINE1="scp $1 $RHOST:$DPATH/work/$1.tmp"
+		LINE2="ssh $RHOST 'mv $DPATH/work/$1.tmp $DPATH/work/$1'"
+	else
+		LINE1="true"
+		LINE2="cp $1 $DPATH/work/"
+	fi
+
+	eval $LINE1
+	if [ $? -eq 0 ]; then
+		eval $LINE2
+	else
+		echo Failed to submit workfile
+	fi;
+elif [ $# -eq 2  ]; then
+	echo starting process workfile $1/$2
+	if [ $RHOST ]; then
+		LINE1="scp $1/$2 $RHOST:$DPATH/work/$2.tmp"
+		LINE2="ssh $RHOST 'mv $DPATH/work/$2.tmp $DPATH/work/$2'"
+	else
+		LINE1="true"
+		LINE2="cp $1/$2 $DPATH/work/"
+	fi
+
+	eval $LINE1
+	if [ $? -eq 0 ]; then
+		eval $LINE2
+	else
+		echo Failed to submit workfile
+	fi;
+else
+        echo "usage: ./start <work file>"
+	echo "or: ./start <path to> <work file>"
+fi;
+
+

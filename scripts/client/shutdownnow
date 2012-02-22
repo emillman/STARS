@@ -1,0 +1,21 @@
+#!/bin/bash
+#
+# terminate the system!
+# shuts down all running processes gracefully
+# kills all running process tasks.
+#
+#
+#
+source env.sh
+if [[ $# -eq 1 &&  $1 == 'confirm' ]]; then
+	echo sending shutdown now request
+	if [ $RHOST ]; then
+		LINE="ssh $RHOST 'touch $DPATH/work/shutdown.clts'"
+	else
+		LINE="touch $DPATH/work/shutdown.clts"
+	fi
+	eval $LINE
+else
+	echo "missing argument, type: ./shutdown confirm"
+	echo "to perform the shutdown"
+fi;

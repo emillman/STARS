@@ -1,0 +1,56 @@
+#!/bin/bash
+#
+# Copyright (C) 2011 Eamon Millman
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program; if not, see <http://www.gnu.org/licenses/>.
+#
+
+source ../env.sh
+
+MODE='release'
+
+if [[ $1 == 'debug' || $1 == 'release' ]]; then
+        MODE=$1
+fi
+
+echo $* | grep clean
+if [ $? -eq 0 ]; then
+
+	make MODE=$MODE clean
+	if [ $? -ne 0 ]; then
+		echo failed to clean omnet instrumentation
+		exit 1
+	fi
+fi
+
+echo $* | grep makefiles
+if [ $? -eq 0 ]; then
+
+        make makefiles
+	if [ $? -ne 0 ]; then
+                echo failed to makefiles omnet instrumentation
+                exit 1
+        fi
+fi
+
+if [[ $MODE == 'debug' || $MODE == 'release' ]]; then
+
+	echo Building MANET mode $MODE
+
+	make MODE=$MODE CONFIG=gcc-$MODE -j$J all
+	if [ $? -ne 0 ]; then
+                echo failed to build omnet instrumentation
+                exit 1
+        fi
+fi

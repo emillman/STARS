@@ -1,0 +1,37 @@
+[general]
+name=Sampling Test
+resources=/home/emillman/hg/manetsim/manetsim.tar.gz
+modulepath=./manetsim/py
+modulename=ExperimentProcess
+results=/home/emillman/results/
+
+[process]
+runs=4
+repeat=2
+config=Simulation
+cleanup
+priority=0
+workers=0
+exit_on_error
+
+[ExperimentProcess]
+
+[SimulationProcess]
+task=SimulationTask
+
+[SimulationTask]
+slots=2
+
+[AnalysisProcess]
+
+[MatlabTask]
+slots=2
+script=templateScript
+tmin=0
+tmax=10
+
+[Config Simulation]
+extends = Exp
+repeat = 4
+sim-time-limit = 10s
+**.logger.*.enabled = true

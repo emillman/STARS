@@ -1,0 +1,55 @@
+#!/bin/bash
+#
+# Copyright (C) 2011 Eamon Millman
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program; if not, see <http://www.gnu.org/licenses/>.
+#
+
+CWD=$PWD/dep
+
+mkdir -p $CWD
+
+cd $CWD
+wget http://www.python.org/ftp/python/2.6/Python-2.6.tgz
+tar zxf Python-2.6.tgz
+rm Python-2.6.tgz
+
+cd Python-2.6
+./configure --prefix=$CWD && make && make install
+if [ $? -ne 0 ]; then
+	echo Failed to setup Python 2.6
+	exit 1
+fi
+#rm -rf Python-2.6.4
+
+export PATH=$CWD/bin:$PATH
+export LD_LIBRARY_PATH=$CWD/lib
+
+cd $CWD
+wget http://sourceforge.net/projects/pympi/files/pyMPI/2.5%20beta/pyMPI-2.5b0.tar.gz/download
+tar zxf pyMPI-2.5b0.tar.gz
+rm pyMPI-2.5b0.tar.gz
+cd pyMPI-2.5b0
+./configure --prefix=$CWD --with-isatty=yes --with-python=python2.6 && make && make install
+
+if [ $? -ne 0 ]; then
+	echo Failed to setup pyMPI 2.5b
+fi
+
+#rm -rf pyMPI-2.5b0
+
+#rm -rf include share etc
+cd $CWD
+rm -rf pyMPI-2.5b0
+rm -rf Python-2.6

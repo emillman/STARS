@@ -1,0 +1,8 @@
+[general]
+modulename=RandomTestProcess
+
+[process]
+period=600
+maxtasks=100
+tasktime=10
+ctrltasktime=2

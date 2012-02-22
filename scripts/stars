@@ -1,0 +1,25 @@
+#!/bin/bash
+# mpi start script for closed loop statistical testing system
+#
+# takes no input.
+#
+# sets up script environment and exports required variables to the nodes
+#
+# note: start script is called to start the system
+
+STARSPATH=$PWD
+export STARSPATH
+
+PATH=$STARSPATH/bin:$PATH
+export PATH
+
+PYTHONPATH=$STARSPATH/py/node:$STARSPATH/py/task:$STARSPATH/py/proc:$STARSPATH/py/test:$STARSPATH/py/test/proc:$STARSPATH/py/test/task:$STARSPATH/py:$PYTHONPATH
+export PYTHONPATH
+
+LD_LIBRARY_PATH=$STARSPATH/lib:/usr/local/lib:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH
+
+rm work/*.invalid &> /dev/null
+#mv work/Status.loaded work/Status
+
+mpirun --prefix /usr/local -x PATH -x PYTHONPATH -x LD_LIBRARY_PATH -x STARSPATH -hostfile hosts -np $1 $STARSPATH/mpicall

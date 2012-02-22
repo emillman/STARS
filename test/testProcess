@@ -1,0 +1,5 @@
+[process]
+config=DatarateTest
+script=DatarateTest
+repeat=2
+runs=6

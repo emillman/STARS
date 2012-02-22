@@ -1,0 +1,2 @@
+#!/bin/bash
+nohup ./stars $1 >> ./out-stars.log 2>> ./out-stars.log &

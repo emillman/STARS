@@ -1,0 +1,10 @@
+#!/bin/bash
+
+source env.sh
+
+if [ $RHOST ]; then
+	LINE="ssh $RHOST 'cd $SPATH && hg pull && hg up && ./package && ./deploy $DPATH'"
+else
+	LINE="cd $SPATH && hg pull && hg up && ./package && ./deploy $DPATH"
+fi
+eval $LINE
