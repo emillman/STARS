@@ -113,7 +113,7 @@ class Task(Message):
 
 		for s,h,p,f in self._result:
 			try:
-				success = success and self._data_access.checkStore( s, f )
+				success = self._data_access.checkStore( s, f ) and success
 			except:
 				success = False
 
@@ -131,7 +131,7 @@ class Task(Message):
 		for s,h,p,f in self._result:
 			self.display( OUTPUT_DEBUG, 's %s h %s p %s f %s' % ( s,h,p,f ) )
 			try:
-				success = success and self._data_access.store( s,h,p,f )
+				success = self._data_access.store( s,h,p,f ) and success
 			except:
 				displayExcept()
 				success = False
