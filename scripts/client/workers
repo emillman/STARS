@@ -18,11 +18,10 @@ if [ $# -eq 2 ]; then
 	echo setting process $1 to use $2 nodes
 	if [ $RHOST ]; then
 
-		LINE="ssh $RHOST 'touch $DPATH/work/$1.$2.workers'"
+		ssh "$RHOST" "touch '$DPATH/work/$1.$2.workers'"
 	else
-		LINE="touch $DPATH/work/$1.$2.workers"
+		touch "$DPATH/work/$1.$2.workers"
 	fi;
-	eval $LINE
 else
         echo "usage: ./workers <process id> <min workers>"
         echo "to obtain the process id run ./info"

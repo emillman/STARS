@@ -15,12 +15,10 @@ source "${SCRIPT_DIR}/env.sh"
 if [ $# -eq 1 ]; then
 	echo requesting to stop process $1 now
 	if [ $RHOST ]; then
-		
-		LINE="ssh $RHOST 'touch $DPATH/work/$1.kill'"
+		ssh "$RHOST" "touch '$DPATH/work/$1.kill'"
 	else
-		LINE="touch $DPATH/work/$1.kill"
+		touch "$DPATH/work/$1.kill"
 	fi;
-	eval $LINE
 else
         echo "usage: ./stopnow <process id>"
 	echo "to obtain the process id run ./info"

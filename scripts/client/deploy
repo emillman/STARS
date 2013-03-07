@@ -12,8 +12,7 @@ SCRIPT_DIR="$( dirname "${BASH_SOURCE[0]}" )"
 source "${SCRIPT_DIR}/env.sh"
 
 if [ $RHOST ]; then
-	LINE="ssh $RHOST 'cd $SPATH && git pull && git up && ./package $@ && ./deploy $DPATH'"
+	ssh "$RHOST" "cd '$SPATH' && git pull && git up && ./package $@ && ./deploy '$DPATH'"
 else
-	LINE="cd $SPATH && git pull && git up && ./package $@ && ./deploy $DPATH"
+	cd "$SPATH" && git pull && git up && ./package "$@" && ./deploy "$DPATH"
 fi
-eval $LINE

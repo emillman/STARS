@@ -12,9 +12,8 @@ source "${SCRIPT_DIR}/env.sh"
 if [ $# -eq 1 ]; then
 	echo stars start request sent for $1 processes
 	if [ $RHOST ]; then
-		LINE="ssh $RHOST 'cd $DPATH && ./starsbg $1'"
+		ssh "$RHOST" "cd '$DPATH' && ./starsbg '$1'"
 	else
-		LINE="cd $DPATH && ./starsbg $1"
+		cd "$DPATH" && ./starsbg "$1"
 	fi
-	eval $LINE
 fi;

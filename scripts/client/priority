@@ -16,11 +16,10 @@ source "${SCRIPT_DIR}/env.sh"
 if [ $# -eq 2 ]; then
 	echo setting process $1 to priority $2
 	if [ $RHOST ]; then
-		LINE="ssh $RHOST 'touch $DPATH/work/$1.$2.priority'"
+		ssh "$RHOST" "touch '$DPATH/work/$1.$2.priority'"
 	else
-		LINE="touch $DPATH/work/$1.$2.priority"
+		touch "$DPATH/work/$1.$2.priority"
 	fi
-	eval $LINE
 else
         echo "usage: ./priority <process id> <priority>"
         echo "to obtain the process id ./info"

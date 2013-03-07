@@ -15,12 +15,10 @@ source "${SCRIPT_DIR}/env.sh"
 if [ $# -eq 1 ]; then
 	echo reserving worker $1
 	if [ $RHOST ]; then
-		
-		LINE="ssh $RHOST 'touch $DPATH/work/$1.reserve'"
+		ssh "$RHOST" "touch '$DPATH/work/$1.reserve'"
 	else
-		LINE="touch $DPATH/work/$1.reserve"
+		touch "$DPATH/work/$1.reserve"
 	fi;
-	eval $LINE
 else
         echo "usage: ./reserve <worker id>"
         echo "to obtain the worker id ./info"

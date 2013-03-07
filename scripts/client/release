@@ -15,12 +15,11 @@ source "${SCRIPT_DIR}/env.sh"
 if [ $# -eq 1 ]; then
 	echo releasing worker $1
 	if [ $RHOST ]; then
-		
-		LINE="ssh $RHOST 'touch $DPATH/work/$1.release'"
+
+		ssh "$RHOST" "touch '$DPATH/work/$1.release'"
 	else
-		LINE="touch $DPATH/work/$1.release"
+		touch "$DPATH/work/$1.release"
 	fi;
-	eval $LINE
 else
         echo "usage: ./release <worker id>"
         echo "to obtain the worker id ./info"

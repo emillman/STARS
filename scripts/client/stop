@@ -15,12 +15,10 @@ source "${SCRIPT_DIR}/env.sh"
 if [ $# -eq 1 ]; then
 	echo requesting to stop process $1
 	if [ $RHOST ]; then
-		
-		LINE="ssh $RHOST 'touch $DPATH/work/$1.stop'"
+		ssh "$RHOST" "touch '$DPATH/work/$1.stop'"
 	else
-		LINE="touch $DPATH/work/$1.stop"
+		touch "$DPATH/work/$1.stop"
 	fi;
-	eval $LINE
 else
         echo "usage: ./stop <process id>"
 	echo "to obtain the process id run ./info"
