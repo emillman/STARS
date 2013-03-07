@@ -1,4 +1,6 @@
 #!/bin/bash
+#
+# Deploys stars. Any arguments given will be passed to the package script.
 
 # If launched through a symlink, check for an env.sh file in that directory.
 # If that does not exist, use the one in the script's actual location.
@@ -7,8 +9,8 @@ SCRIPT_DIR="$( dirname "${BASH_SOURCE[0]}" )"
 source "${SCRIPT_DIR}/env.sh"
 
 if [ $RHOST ]; then
-	LINE="ssh $RHOST 'cd $SPATH && git pull && git up && ./package && ./deploy $DPATH'"
+	LINE="ssh $RHOST 'cd $SPATH && git pull && git up && ./package $@ && ./deploy $DPATH'"
 else
-	LINE="cd $SPATH && git pull && git up && ./package && ./deploy $DPATH"
+	LINE="cd $SPATH && git pull && git up && ./package $@ && ./deploy $DPATH"
 fi
 eval $LINE
