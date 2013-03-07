@@ -4,8 +4,9 @@
 # shuts down all running processes gracefully
 # kills all running process tasks.
 #
-#
-#
+
+# Quit if any command fails or if a variable is unbound
+set -e -o nounset
 
 # If launched through a symlink, check for an env.sh file in that directory.
 # If that does not exist, use the one in the script's actual location.

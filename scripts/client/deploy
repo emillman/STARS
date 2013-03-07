@@ -2,6 +2,9 @@
 #
 # Deploys stars. Any arguments given will be passed to the package script.
 
+# Quit if any command fails or if any variable is unbound
+set -o errexit -o nounset
+
 # If launched through a symlink, check for an env.sh file in that directory.
 # If that does not exist, use the one in the script's actual location.
 SCRIPT_DIR="$( dirname "${BASH_SOURCE[0]}" )"

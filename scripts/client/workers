@@ -5,6 +5,9 @@
 # param 2: new workers, interger value greater than zero.
 #		how many nodes to allocate
 
+# Quit if any command fails or if a variable is unbound
+set -e -o nounset
+
 # If launched through a symlink, check for an env.sh file in that directory.
 # If that does not exist, use the one in the script's actual location.
 SCRIPT_DIR="$( dirname "${BASH_SOURCE[0]}" )"
