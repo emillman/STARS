@@ -2,7 +2,9 @@
 #
 # gracefully stop the process 
 # param 1: process id
-source env.sh
+
+SCRIPT_DIR="$( dirname "$(readlink -e "${BASH_SOURCE[0]}")" )"
+source "${SCRIPT_DIR}/env.sh"
 
 if [ $# -eq 1 ]; then
 	echo starting process workfile $1

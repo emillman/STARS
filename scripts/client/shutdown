@@ -4,9 +4,10 @@
 # shuts down all running processes gracefully
 # kills all running process tasks.
 #
-#
-#
-source env.sh
+
+SCRIPT_DIR="$( dirname "$(readlink -e "${BASH_SOURCE[0]}")" )"
+source "${SCRIPT_DIR}/env.sh"
+
 if [[ $# -eq 1 &&  $1 == 'confirm' ]]; then
 	echo sending graceful shutdown request
 	if [ $RHOST ]; then

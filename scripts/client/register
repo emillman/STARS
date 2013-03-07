@@ -1,5 +1,6 @@
 #!/bin/bash
-source env.sh
+SCRIPT_DIR="$( dirname "$(readlink -e "${BASH_SOURCE[0]}")" )"
+source "${SCRIPT_DIR}/env.sh"
 
 echo "registering user's public key with STARS"
 

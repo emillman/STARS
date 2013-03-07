@@ -2,7 +2,8 @@
 #
 # shows information about currently running processes
 
-source env.sh
+SCRIPT_DIR="$( dirname "$(readlink -e "${BASH_SOURCE[0]}")" )"
+source "${SCRIPT_DIR}/env.sh"
 
 if [ $RHOST ]; then
 	if [ $# -eq 0 ]; then

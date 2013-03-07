@@ -4,8 +4,8 @@
 # param 1: process id
 # param 2: new priority, interger value, reletive to concurrent processes
 
-source env.sh
-
+SCRIPT_DIR="$( dirname "$(readlink -e "${BASH_SOURCE[0]}")" )"
+source "${SCRIPT_DIR}/env.sh"
 
 if [ $# -eq 2 ]; then
 	echo setting process $1 to priority $2

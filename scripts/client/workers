@@ -5,7 +5,8 @@
 # param 2: new workers, interger value greater than zero.
 #		how many nodes to allocate
 
-source env.sh
+SCRIPT_DIR="$( dirname "$(readlink -e "${BASH_SOURCE[0]}")" )"
+source "${SCRIPT_DIR}/env.sh"
 
 if [ $# -eq 2 ]; then
 	echo setting process $1 to use $2 nodes

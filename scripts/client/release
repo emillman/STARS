@@ -3,6 +3,9 @@
 # release worker by id
 # param 1: worker id
 
+SCRIPT_DIR="$( dirname "$(readlink -e "${BASH_SOURCE[0]}")" )"
+source "${SCRIPT_DIR}/env.sh"
+
 if [ $# -eq 1 ]; then
 	echo releasing worker $1
 	if [ $RHOST ]; then
