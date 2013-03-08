@@ -111,8 +111,8 @@ if [[ $PACK_AUTO ]]; then
 	chmod 700 mpicall
 
 	echo "archiving..."
-	tar zcfh $AUTO_FILENAME *
-	mv $AUTO_FILENAME ../
+	tar zcfh "$AUTO_FILENAME" *
+	mv "$AUTO_FILENAME" ../
 
 	cd ..
 	rm -rf .package
@@ -124,10 +124,10 @@ if [[ $PACK_CLIENT ]]; then
 
 	cp scripts/client/* .package/
 	cd .package
-	
+
 	chmod 744 *
-	tar zcf $CLIENT_FILENAME *
-	mv $CLIENT_FILENAME ../
+	tar zcf "$CLIENT_FILENAME" *
+	mv "$CLIENT_FILENAME" ../
 
 	rm -rf .package
 fi
