@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# shows information about currently running processes
+# Shows information about currently running processes
 
 # Quit if any command fails or if a variable is unbound
 set -e -o nounset
@@ -25,18 +25,16 @@ Usage:
 	exit 1
 fi
 
-if [ $RHOST ]; then
+if [ -n $RHOST ]; then
 	if [ $# -eq 0 ]; then
 		ssh "$RHOST" "cat '$DPATH/log/info.log'"
-	fi;
-	if [ $# -eq 1 ]; then
+	else
 		ssh "$RHOST" "cat '$DPATH/out-stars.log' | grep '$1'"
 	fi;
 else
 	if [ $# -eq 0 ]; then
 		cat "$DPATH/log/info.log"
-	fi;
-	if [ $# -eq 1 ]; then
+	else
 		cat "$DPATH/out-stars.log" | grep "$1"
 	fi;
 fi;
