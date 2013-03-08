@@ -35,16 +35,14 @@ Usage:
 [[ $# -gt 1 ]] && print_usage 1
 [[ $# -ne 0 && ("$1" == "-h" || "$1" == "--help") ]] && print_usage
 
-if [ -n "$RHOST" ]; then
-	if [ $# -eq 0 ]; then
-		ssh "$RHOST" "cat '$DPATH/log/info.log'"
-	else
-		ssh "$RHOST" "cat '$DPATH/out-stars.log' | grep '$1'"
-	fi;
+if [ $# -eq 0 ]; then
+	COMMAND="cat '$DPATH/log/info.log'"
 else
-	if [ $# -eq 0 ]; then
-		cat "$DPATH/log/info.log"
-	else
-		cat "$DPATH/out-stars.log" | grep "$1"
-	fi;
-fi;
+	COMMAND="cat '$DPATH/out-stars.log' | grep '$1'"
+fi
+
+if [ -n "$RHOST" ]; then
+	ssh "$RHOST" "$COMMAND"
+else
+	eval "$COMMAND"
+fi
