@@ -41,11 +41,11 @@ if [[ ! $PACK_AUTO && ! $PACK_CLIENT ]]; then
 	PACK_CLIENT=true
 fi
 
-if [ $PACK_AUTO ]; then
+if [[ $PACK_AUTO ]]; then
 	rm -rf .package
 	mkdir .package
 
-	if [ $PACK_DEPS ]; then
+	if [[ $PACK_DEPS ]]; then
 		echo packaging binaries
 		mkdir -p .package/bin
 		cp -r dep/bin/* .package/bin/
@@ -81,11 +81,11 @@ if [ $PACK_AUTO ]; then
 	ln -s util.py cltsutils.py
 	cd ..
 	#echo $PWD
-	
-	if [ $CPU_HT ]; then
+
+	if [[ $CPU_HT ]]; then
 		echo "configuring package for hyper-threaded cpu system"
 		touch cpu_ht
-	elif [ $CPU_ONE ]; then
+	elif [[ $CPU_ONE ]]; then
 		echo "configuring package for single cpu system"
 		touch cpu_one
 	fi
@@ -99,7 +99,7 @@ if [ $PACK_AUTO ]; then
 	chmod -R 700 proc
 	chmod -R 700 py
 
-	if [ $PACK_DEPS ]; then
+	if [[ $PACK_DEPS ]]; then
 		chmod -R 700 lib
 		chmod -R 700 bin
 	fi
@@ -118,7 +118,7 @@ if [ $PACK_AUTO ]; then
 	rm -rf .package
 fi
 
-if [ $PACK_CLIENT ]; then
+if [[ $PACK_CLIENT ]]; then
 	rm -rf .package
 	mkdir .package
 
