@@ -37,18 +37,18 @@ Usage:
 [[ $# -eq 0 ]] && print_usage 1
 [[ $1 == "-h" || $1 == "--help" ]] && print_usage
 
-while [ "$#" -ne 0 ]; do
-	echo "Processing workfile: $1"
-	WORKFILE="$( basename "$1" )"
+for file in "$@"; do
+	echo "Processing workfile: $file"
+	WORKFILE="$( basename "$file" )"
 
-	if [ $RHOST ]; then
-		scp "$1" "$RHOST:$DPATH/work/$WORKFILE.tmp" || die "Unable to send workfile to managment node"
+	if [ -n "$RHOST" ]; then
+		scp "$file" "$RHOST:$DPATH/work/$WORKFILE.tmp" || die "Unable to send workfile to managment node"
 		ssh "$RHOST" "mv '$DPATH/work/$WORKFILE.tmp $DPATH/work/$WORKFILE'" || die "Failed to submit workfile"
 	else
-		stat "$1" || die "Unable to send workfile to managment node"
-		cp "$1" "$DPATH/work/" || die "Failed to submit workfile"
+		stat "$file" || die "Unable to send workfile to managment node"
+		cp "$file" "$DPATH/work/" || die "Failed to submit workfile"
 	fi
 
-	shift
+	echo "Submitted $WORKFILE successfully"
 done
 
