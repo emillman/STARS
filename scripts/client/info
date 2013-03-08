@@ -11,6 +11,20 @@ SCRIPT_DIR="$( dirname "${BASH_SOURCE[0]}" )"
 [ -r "${SCRIPT_DIR}/env.sh" ] || SCRIPT_DIR="$( dirname "$(readlink -e "${BASH_SOURCE[0]}")" )"
 source "${SCRIPT_DIR}/env.sh"
 
+if [[ $# -gt 1 ]] || [[ $# -ne 0 && ("$1" == "-h" || "$1" == "--help") ]]; then
+	SCRIPT_NAME="$( basename "${BASH_SOURCE[0]}" )"
+    echo "\
+Usage:
+	1. $SCRIPT_NAME
+	2. $SCRIPT_NAME 'pattern'
+
+	1. Display the status of the STARS cluster.
+
+	2. Display any occurances of 'pattern' in the STARS output log.
+"
+	exit 1
+fi
+
 if [ $RHOST ]; then
 	if [ $# -eq 0 ]; then
 		ssh "$RHOST" "cat '$DPATH/log/info.log'"
