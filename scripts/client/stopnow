@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# immediately stop the process 
+# immediately stop the process
 # param 1: process id
 
 # Quit if any command fails or if a variable is unbound
@@ -12,14 +12,16 @@ SCRIPT_DIR="$( dirname "${BASH_SOURCE[0]}" )"
 [ -r "${SCRIPT_DIR}/env.sh" ] || SCRIPT_DIR="$( dirname "$(readlink -e "${BASH_SOURCE[0]}")" )"
 source "${SCRIPT_DIR}/env.sh"
 
-if [ $# -eq 1 ]; then
-	echo requesting to stop process $1 now
-	if [ $RHOST ]; then
-		ssh "$RHOST" "touch '$DPATH/work/$1.kill'"
-	else
-		touch "$DPATH/work/$1.kill"
-	fi;
+if [ $# -gt 0 ]; then
+	for process in "$@"; do
+		echo requesting to stop process $process now
+		if [ -n $RHOST ]; then
+			ssh "$RHOST" "touch '$DPATH/work/$process.kill'"
+		else
+			touch "$DPATH/work/$process.kill"
+		fi;
+	done
 else
-        echo "usage: ./stopnow <process id>"
+    echo "usage: ./stopnow <process id>"
 	echo "to obtain the process id run ./info"
 fi;
