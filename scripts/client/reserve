@@ -3,16 +3,44 @@
 # reserve worker by id
 # param 1: worker id
 
-if [ $# -eq 1 ]; then
-	echo reserving worker $1
-	if [ $RHOST ]; then
-		
-		LINE="ssh $RHOST 'touch $DPATH/work/$1.reserve'"
+########################################
+# Config, etc
+########################################
+
+# Quit if any command fails or if a variable is unbound
+set -e -o nounset
+
+# If launched through a symlink, check for an env.sh file in that directory.
+# If that does not exist, use the one in the script's actual location.
+SCRIPT_DIR="$( dirname "${BASH_SOURCE[0]}" )"
+[ -r "${SCRIPT_DIR}/env.sh" ] || SCRIPT_DIR="$( dirname "$(readlink -e "${BASH_SOURCE[0]}")" )"
+source "${SCRIPT_DIR}/env.sh"
+
+function print_usage () {
+	SCRIPT_NAME="$( basename "${BASH_SOURCE[0]}" )"
+        echo "
+Usage:
+	$SCRIPT_NAME <WORKER_ID1> [WORKER_ID2 [...]]
+
+	Reserves the specified workers.
+	To obtain a list of worker IDs, run the 'info' command.
+
+	WORKER_ID# - ID of the worker.
+"
+	exit ${1:-0}
+}
+
+########################################
+# Script
+########################################
+[[ $# -eq 0 ]] && print_usage 1
+[[ $1 == "-h" || $1 == "--help" ]] && print_usage
+
+for worker in "$@"; do
+	echo "reserving worker $worker"
+	if [ -n "$RHOST" ]; then
+		ssh "$RHOST" "touch '$DPATH/work/$worker.reserve'"
 	else
-		LINE="touch $DPATH/work/$1.reserve"
+		touch "$DPATH/work/$worker.reserve"
 	fi;
-	eval $LINE
-else
-        echo "usage: ./reserve <worker id>"
-        echo "to obtain the worker id ./info"
-fi;
+done

@@ -1,44 +1,54 @@
 #!/bin/bash
 #
-# gracefully stop the process 
-# param 1: process id
-source env.sh
+# Start the specified workfiles
 
-if [ $# -eq 1 ]; then
-	echo starting process workfile $1
-	if [ $RHOST ]; then
-		LINE1="scp $1 $RHOST:$DPATH/work/$1.tmp"
-		LINE2="ssh $RHOST 'mv $DPATH/work/$1.tmp $DPATH/work/$1'"
+########################################
+# Config, etc
+########################################
+
+# Quit if any command fails or if a variable is unbound
+set -e -o nounset
+
+# If launched through a symlink, check for an env.sh file in that directory.
+# If that does not exist, use the one in the script's actual location.
+SCRIPT_DIR="$( dirname "${BASH_SOURCE[0]}" )"
+[ -r "${SCRIPT_DIR}/env.sh" ] || SCRIPT_DIR="$( dirname "$(readlink -e "${BASH_SOURCE[0]}")" )"
+source "${SCRIPT_DIR}/env.sh"
+
+function die () {
+	[ -n "$1" ] && echo "$1" >&2
+	exit 1
+}
+
+function print_usage () {
+	SCRIPT_NAME="$( basename "${BASH_SOURCE[0]}" )"
+        echo "
+Usage:
+	$SCRIPT_NAME <WORKFILE1> [WORKFILE2 [...]]
+
+	Start the specified workfiles.
+"
+	exit ${1:-0}
+}
+
+########################################
+# Script
+########################################
+[[ $# -eq 0 ]] && print_usage 1
+[[ $1 == "-h" || $1 == "--help" ]] && print_usage
+
+for file in "$@"; do
+	echo "Processing workfile: $file"
+	WORKFILE="$( basename "$file" )"
+
+	if [ -n "$RHOST" ]; then
+		scp "$file" "$RHOST:$DPATH/work/$WORKFILE.tmp" || die "Unable to send workfile to managment node"
+		ssh "$RHOST" "mv '$DPATH/work/$WORKFILE.tmp $DPATH/work/$WORKFILE'" || die "Failed to submit workfile"
 	else
-		LINE1="true"
-		LINE2="cp $1 $DPATH/work/"
+		stat "$file" || die "Unable to send workfile to managment node"
+		cp "$file" "$DPATH/work/" || die "Failed to submit workfile"
 	fi
 
-	eval $LINE1
-	if [ $? -eq 0 ]; then
-		eval $LINE2
-	else
-		echo Failed to submit workfile
-	fi;
-elif [ $# -eq 2  ]; then
-	echo starting process workfile $1/$2
-	if [ $RHOST ]; then
-		LINE1="scp $1/$2 $RHOST:$DPATH/work/$2.tmp"
-		LINE2="ssh $RHOST 'mv $DPATH/work/$2.tmp $DPATH/work/$2'"
-	else
-		LINE1="true"
-		LINE2="cp $1/$2 $DPATH/work/"
-	fi
-
-	eval $LINE1
-	if [ $? -eq 0 ]; then
-		eval $LINE2
-	else
-		echo Failed to submit workfile
-	fi;
-else
-        echo "usage: ./start <work file>"
-	echo "or: ./start <path to> <work file>"
-fi;
-
+	echo "Submitted $WORKFILE successfully"
+done
 

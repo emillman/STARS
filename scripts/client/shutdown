@@ -4,18 +4,40 @@
 # shuts down all running processes gracefully
 # kills all running process tasks.
 #
-#
-#
-source env.sh
-if [[ $# -eq 1 &&  $1 == 'confirm' ]]; then
-	echo sending graceful shutdown request
-	if [ $RHOST ]; then
-		LINE="ssh $RHOST 'touch $DPATH/work/shutdown.clts'"
-	else
-		LINE="touch $DPATH/work/shutdown.clts"
-	fi
-	eval $LINE
+
+########################################
+# Config, etc
+########################################
+
+# Quit if any command fails or if a variable is unbound
+set -e -o nounset
+
+# If launched through a symlink, check for an env.sh file in that directory.
+# If that does not exist, use the one in the script's actual location.
+SCRIPT_DIR="$( dirname "${BASH_SOURCE[0]}" )"
+[ -r "${SCRIPT_DIR}/env.sh" ] || SCRIPT_DIR="$( dirname "$(readlink -e "${BASH_SOURCE[0]}")" )"
+source "${SCRIPT_DIR}/env.sh"
+
+function print_usage () {
+	SCRIPT_NAME="$( basename "${BASH_SOURCE[0]}" )"
+        echo "
+Usage:
+	$SCRIPT_NAME confirm
+
+	Gracefully shuts down the STARS cluster.
+"
+	exit ${1:-0}
+}
+
+########################################
+# Script
+########################################
+[[ $# -ne 1 ]] && print_usage 1
+[[ $1 == "-h" || $1 == "--help" || $1 != 'confirm' ]] && print_usage
+
+echo sending graceful shutdown request
+if [ -n "$RHOST" ]; then
+	ssh "$RHOST" "touch '$DPATH/work/shutdown.clts'"
 else
-	echo "missing argument, type: ./shutdown confirm"
-	echo "to perform the shutdown"
-fi;
+	touch "$DPATH/work/shutdown.clts"
+fi

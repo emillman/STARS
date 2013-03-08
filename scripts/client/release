@@ -3,16 +3,44 @@
 # release worker by id
 # param 1: worker id
 
-if [ $# -eq 1 ]; then
-	echo releasing worker $1
-	if [ $RHOST ]; then
-		
-		LINE="ssh $RHOST 'touch $DPATH/work/$1.release'"
+########################################
+# Config, etc
+########################################
+
+# Quit if any command fails or if a variable is unbound
+set -e -o nounset
+
+# If launched through a symlink, check for an env.sh file in that directory.
+# If that does not exist, use the one in the script's actual location.
+SCRIPT_DIR="$( dirname "${BASH_SOURCE[0]}" )"
+[ -r "${SCRIPT_DIR}/env.sh" ] || SCRIPT_DIR="$( dirname "$(readlink -e "${BASH_SOURCE[0]}")" )"
+source "${SCRIPT_DIR}/env.sh"
+
+function print_usage () {
+	SCRIPT_NAME="$( basename "${BASH_SOURCE[0]}" )"
+        echo "
+Usage:
+	$SCRIPT_NAME <WORKER_ID1> [WORKER_ID2 [...]]
+
+	Releases the specified workers from the STARS cluster.
+	To obtain a list of worker IDs, run the 'info' command.
+
+	WORKER_ID# - ID of the worker.
+"
+	exit ${1:-0}
+}
+
+########################################
+# Script
+########################################
+[[ $# -eq 0 ]] && print_usage 1
+[[ $1 == "-h" || $1 == "--help" ]] && print_usage
+
+for worker in "$@"; do
+	echo "releasing worker $worker"
+	if [ -n "$RHOST" ]; then
+		ssh "$RHOST" "touch '$DPATH/work/$worker.release'"
 	else
-		LINE="touch $DPATH/work/$1.release"
+		touch "$DPATH/work/$worker.release"
 	fi;
-	eval $LINE
-else
-        echo "usage: ./release <worker id>"
-        echo "to obtain the worker id ./info"
-fi;
+done

@@ -1,22 +1,48 @@
 #!/bin/bash
 #
-# shows information about currently running processes 
+# Shows information about currently running processes
 
-source env.sh
+########################################
+# Config, etc
+########################################
 
-if [ $RHOST ]; then
-	if [ $# -eq 0 ]; then
-		LINE="ssh $RHOST 'cat $DPATH/log/info.log'"
-	fi;
-	if [ $# -eq 1 ]; then
-		LINE="ssh $RHOST 'cat $DPATH/out-stars.log | grep \"$1\"'"
-	fi;
+# Quit if any command fails or if a variable is unbound
+set -e -o nounset
+
+# If launched through a symlink, check for an env.sh file in that directory.
+# If that does not exist, use the one in the script's actual location.
+SCRIPT_DIR="$( dirname "${BASH_SOURCE[0]}" )"
+[ -r "${SCRIPT_DIR}/env.sh" ] || SCRIPT_DIR="$( dirname "$(readlink -e "${BASH_SOURCE[0]}")" )"
+source "${SCRIPT_DIR}/env.sh"
+
+function print_usage () {
+	SCRIPT_NAME="$( basename "${BASH_SOURCE[0]}" )"
+    echo "\
+Usage:
+	1. $SCRIPT_NAME
+	2. $SCRIPT_NAME 'pattern'
+
+	1. Display the status of the STARS cluster.
+
+	2. Display any occurances of 'pattern' in the STARS output log.
+"
+	exit ${1:-0}
+}
+
+########################################
+# Script
+########################################
+[[ $# -gt 1 ]] && print_usage 1
+[[ $# -ne 0 && ("$1" == "-h" || "$1" == "--help") ]] && print_usage
+
+if [ $# -eq 0 ]; then
+	COMMAND="cat '$DPATH/log/info.log'"
 else
-	if [ $# -eq 0 ]; then
-		LINE="cat $DPATH/log/info.log"
-	fi;
-	if [ $# -eq 1 ]; then
-		LINE="cat $RPATH/out-stars.log | grep \'$1\'"
-	fi;
-fi;
-eval $LINE
+	COMMAND="cat '$DPATH/out-stars.log' | grep '$1'"
+fi
+
+if [ -n "$RHOST" ]; then
+	ssh "$RHOST" "$COMMAND"
+else
+	eval "$COMMAND"
+fi

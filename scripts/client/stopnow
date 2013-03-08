@@ -1,20 +1,46 @@
 #!/bin/bash
 #
-# immediately stop the process 
+# immediately stop the process
 # param 1: process id
 
-source env.sh
+########################################
+# Config, etc
+########################################
 
-if [ $# -eq 1 ]; then
-	echo requesting to stop process $1 now
-	if [ $RHOST ]; then
-		
-		LINE="ssh $RHOST 'touch $DPATH/work/$1.kill'"
+# Quit if any command fails or if a variable is unbound
+set -e -o nounset
+
+# If launched through a symlink, check for an env.sh file in that directory.
+# If that does not exist, use the one in the script's actual location.
+SCRIPT_DIR="$( dirname "${BASH_SOURCE[0]}" )"
+[ -r "${SCRIPT_DIR}/env.sh" ] || SCRIPT_DIR="$( dirname "$(readlink -e "${BASH_SOURCE[0]}")" )"
+source "${SCRIPT_DIR}/env.sh"
+
+function print_usage () {
+	SCRIPT_NAME="$( basename "${BASH_SOURCE[0]}" )"
+        echo "
+Usage:
+	$SCRIPT_NAME <PROCESS_ID1> [PROCESS_ID2 [...]]
+
+	Forcefully stop the specified processes.
+	To obtain a list of process IDs, run the 'info' command.
+
+	PROCESS_ID# - ID of the specified process.
+"
+	exit ${1:-0}
+}
+
+########################################
+# Script
+########################################
+[[ $# -eq 0 ]] && print_usage 1
+[[ $1 == "-h" || $1 == "--help" ]] && print_usage
+
+for process in "$@"; do
+	echo "requesting to stop process $process now"
+	if [ -n "$RHOST" ]; then
+		ssh "$RHOST" "touch '$DPATH/work/$process.kill'"
 	else
-		LINE="touch $DPATH/work/$1.kill"
+		touch "$DPATH/work/$process.kill"
 	fi;
-	eval $LINE
-else
-        echo "usage: ./stopnow <process id>"
-	echo "to obtain the process id run ./info"
-fi;
+done
