@@ -5,7 +5,10 @@
 # param 2: new workers, interger value greater than zero.
 #		how many nodes to allocate
 
-SCRIPT_DIR="$( dirname "$(readlink -e "${BASH_SOURCE[0]}")" )"
+# If launched through a symlink, check for an env.sh file in that directory.
+# If that does not exist, use the one in the script's actual location.
+SCRIPT_DIR="$( dirname "${BASH_SOURCE[0]}" )"
+[ -r "${SCRIPT_DIR}/env.sh" ] || SCRIPT_DIR="$( dirname "$(readlink -e "${BASH_SOURCE[0]}")" )"
 source "${SCRIPT_DIR}/env.sh"
 
 if [ $# -eq 2 ]; then
