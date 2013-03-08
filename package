@@ -46,26 +46,26 @@ if [[ $PACK_AUTO ]]; then
 	mkdir .package
 
 	if [[ $PACK_DEPS ]]; then
-		echo packaging binaries
+		echo "packaging binaries..."
 		mkdir -p .package/bin
 		cp -r dep/bin/* .package/bin/
 
-		echo packaging libraries
+		echo "packaging libraries..."
 		mkdir -p .package/lib
 		cp -r dep/lib/* .package/lib/
 
-		echo packaging misc files and data
+		echo "packaging misc files and data..."
 		mkdir -p .package/share
 		cp -r dep/share/* .package/share/
 	fi
 
-	echo packaging utility scripts
+	echo "packaging utility scripts..."
 	mkdir -p .package/scripts
 	cp scripts/stars .package/scripts/
 	cp scripts/starsbg .package/scripts/
 	cp scripts/mpicall .package/scripts/
 
-	echo packaging python modules
+	echo "packaging python modules..."
 	mkdir -p .package/py
 	cp -r py/* .package/py/
 
@@ -110,7 +110,7 @@ if [[ $PACK_AUTO ]]; then
 	chmod 700 starsbg
 	chmod 700 mpicall
 
-	echo archiving
+	echo "archiving..."
 	tar zcfh $AUTO_FILENAME *
 	mv $AUTO_FILENAME ../
 
