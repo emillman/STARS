@@ -20,12 +20,12 @@ function print_usage () {
 	SCRIPT_NAME="$( basename "${BASH_SOURCE[0]}" )"
         echo "
 Usage:
-	$SCRIPT_NAME <WORKER_ID>
+	$SCRIPT_NAME <WORKER_ID1> [WORKER_ID2 [...]]
 
-	Releases the specified worker from the STARS cluster.
+	Releases the specified workers from the STARS cluster.
 	To obtain a list of worker IDs, run the 'info' command.
 
-	WORKER_ID - ID of the worker.
+	WORKER_ID# - ID of the worker.
 "
 	exit ${1:-0}
 }
@@ -33,12 +33,14 @@ Usage:
 ########################################
 # Script
 ########################################
-[[ $# -ne 1 ]] && print_usage 1
+[[ $# -eq 0 ]] && print_usage 1
 [[ $1 == "-h" || $1 == "--help" ]] && print_usage
 
-echo "releasing worker $1"
-if [ -n "$RHOST" ]; then
-	ssh "$RHOST" "touch '$DPATH/work/$1.release'"
-else
-	touch "$DPATH/work/$1.release"
-fi;
+for worker in "$@"; do
+	echo "releasing worker $worker"
+	if [ -n "$RHOST" ]; then
+		ssh "$RHOST" "touch '$DPATH/work/$worker.release'"
+	else
+		touch "$DPATH/work/$worker.release"
+	fi;
+done
