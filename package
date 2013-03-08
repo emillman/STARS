@@ -18,29 +18,27 @@
 AUTO_FILENAME="stars.tar.gz"
 CLIENT_FILENAME="stars-client.tar.gz"
 
-echo $* | grep auto &> /dev/null
-if [ $? -eq 0 ]; then
-	PACK_AUTO="0"
-fi
-echo $* | grep client &> /dev/null
-if [ $? -eq 0 ]; then
-	PACK_CLIENT="0"
-fi
-echo $* | grep deps &> /dev/null
-if [ $? -eq 0 ]; then
-	PACK_DEPS="0"
-fi
+for element in "$@"; do
+	case $element in
+		auto)
+			PACK_AUTO=true;;
+		client)
+			PACK_CLIENT=true;;
+		deps)
+			PACK_DEPS=true;;
+		cpu_ht)
+			CPU_HT=true;;
+		cpu_one)
+			CPU_ONE=true;;
+		*)
+			echo "Invalid argument: $element" &>2
+			exit 1;;
+	esac
+done
+
 if [[ ! $PACK_AUTO && ! $PACK_CLIENT ]]; then
-	PACK_AUTO="0"
-	PACK_CLIENT="0"
-fi
-echo $* | grep cpu_ht &> /dev/null
-if [ $? -eq 0 ]; then
-	CPU_HT="0"
-fi
-echo $* | grep cpu_one &> /dev/null
-if [ $? -eq 0 ]; then
-	CPU_ONE="0"
+	PACK_AUTO=true
+	PACK_CLIENT=true
 fi
 
 if [ $PACK_AUTO ]; then
