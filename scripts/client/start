@@ -2,6 +2,10 @@
 #
 # Start the specified workfiles
 
+########################################
+# Config, etc
+########################################
+
 # Quit if any command fails or if a variable is unbound
 set -e -o nounset
 
@@ -15,6 +19,23 @@ function die () {
 	[ -n "$1" ] && echo "$1" >&2
 	exit 1
 }
+
+function print_usage () {
+	SCRIPT_NAME="$( basename "${BASH_SOURCE[0]}" )"
+        echo "
+Usage:
+	$SCRIPT_NAME <WORKFILE1> [WORKFILE2 [...]]
+
+	Start the specified workfiles.
+"
+	exit ${1:-0}
+}
+
+########################################
+# Script
+########################################
+[[ $# -eq 0 ]] && print_usage 1
+[[ $1 == "-h" || $1 == "--help" ]] && print_usage
 
 while [ "$#" -ne 0 ]; do
 	echo "Processing workfile: $1"

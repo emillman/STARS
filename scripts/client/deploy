@@ -2,6 +2,10 @@
 #
 # Deploys stars. Any arguments given will be passed to the package script.
 
+########################################
+# Config, etc
+########################################
+
 # Quit if any command fails or if any variable is unbound
 set -o errexit -o nounset
 
@@ -11,7 +15,24 @@ SCRIPT_DIR="$( dirname "${BASH_SOURCE[0]}" )"
 [ -r "${SCRIPT_DIR}/env.sh" ] || SCRIPT_DIR="$( dirname "$(readlink -e "${BASH_SOURCE[0]}")" )"
 source "${SCRIPT_DIR}/env.sh"
 
-if [ $RHOST ]; then
+function print_usage () {
+	SCRIPT_NAME="$( basename "${BASH_SOURCE[0]}" )"
+	echo "
+Usage:
+	$SCRIPT_NAME [package option 1 [package option 2 [...]]]
+
+	Updates and redeploys the STARS code to every computer in the cluster.
+	Any arguments given will be passed to the 'package' script.
+"
+	exit ${1:-0}
+}
+
+########################################
+# Script
+########################################
+[[ $# -ne 0 && ($1 == "-h" || $1 == "--help") ]] && print_usage
+
+if [ -n "$RHOST" ]; then
 	ssh "$RHOST" "cd '$SPATH' && git pull && git up && ./package $@ && ./deploy '$DPATH'"
 else
 	cd "$SPATH" && git pull && git up && ./package "$@" && ./deploy "$DPATH"

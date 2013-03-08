@@ -5,6 +5,10 @@
 # param 2: new workers, interger value greater than zero.
 #		how many nodes to allocate
 
+########################################
+# Config, etc
+########################################
+
 # Quit if any command fails or if a variable is unbound
 set -e -o nounset
 
@@ -14,15 +18,30 @@ SCRIPT_DIR="$( dirname "${BASH_SOURCE[0]}" )"
 [ -r "${SCRIPT_DIR}/env.sh" ] || SCRIPT_DIR="$( dirname "$(readlink -e "${BASH_SOURCE[0]}")" )"
 source "${SCRIPT_DIR}/env.sh"
 
-if [ $# -eq 2 ]; then
-	echo setting process $1 to use $2 nodes
-	if [ $RHOST ]; then
+function print_usage () {
+	SCRIPT_NAME="$( basename "${BASH_SOURCE[0]}" )"
+        echo "
+Usage:
+	$SCRIPT_NAME <PROCESS_ID> <NUMBER_OF_WORKERS>
 
-		ssh "$RHOST" "touch '$DPATH/work/$1.$2.workers'"
-	else
-		touch "$DPATH/work/$1.$2.workers"
-	fi;
+	Modify the number of workers allocated to the specified process.
+	To obtain a list of process IDs, run the 'info' command.
+
+	PROCESS_ID - ID of the specified process.
+	NUMBER_OF_WORKERS - Number of nodes to allocate (must be > 0).
+"
+	exit ${1:-0}
+}
+
+########################################
+# Script
+########################################
+[[ $# -ne 0 && ($1 == "-h" || $1 == "--help") ]] && print_usage
+[[ $# -ne 2 ]] && print_usage 1
+
+echo setting process $1 to use $2 nodes
+if [ -n "$RHOST" ]; then
+	ssh "$RHOST" "touch '$DPATH/work/$1.$2.workers'"
 else
-        echo "usage: ./workers <process id> <min workers>"
-        echo "to obtain the process id run ./info"
+	touch "$DPATH/work/$1.$2.workers"
 fi;

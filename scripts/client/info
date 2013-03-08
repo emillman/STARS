@@ -2,6 +2,10 @@
 #
 # Shows information about currently running processes
 
+########################################
+# Config, etc
+########################################
+
 # Quit if any command fails or if a variable is unbound
 set -e -o nounset
 
@@ -11,7 +15,7 @@ SCRIPT_DIR="$( dirname "${BASH_SOURCE[0]}" )"
 [ -r "${SCRIPT_DIR}/env.sh" ] || SCRIPT_DIR="$( dirname "$(readlink -e "${BASH_SOURCE[0]}")" )"
 source "${SCRIPT_DIR}/env.sh"
 
-if [[ $# -gt 1 ]] || [[ $# -ne 0 && ("$1" == "-h" || "$1" == "--help") ]]; then
+function print_usage () {
 	SCRIPT_NAME="$( basename "${BASH_SOURCE[0]}" )"
     echo "\
 Usage:
@@ -22,10 +26,16 @@ Usage:
 
 	2. Display any occurances of 'pattern' in the STARS output log.
 "
-	exit 1
-fi
+	exit ${1:-0}
+}
 
-if [ -n $RHOST ]; then
+########################################
+# Script
+########################################
+[[ $# -gt 1 ]] && print_usage 1
+[[ $# -ne 0 && ("$1" == "-h" || "$1" == "--help") ]] && print_usage
+
+if [ -n "$RHOST" ]; then
 	if [ $# -eq 0 ]; then
 		ssh "$RHOST" "cat '$DPATH/log/info.log'"
 	else

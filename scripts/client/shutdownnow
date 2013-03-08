@@ -5,6 +5,10 @@
 # kills all running process tasks.
 #
 
+########################################
+# Config, etc
+########################################
+
 # Quit if any command fails or if a variable is unbound
 set -e -o nounset
 
@@ -14,14 +18,26 @@ SCRIPT_DIR="$( dirname "${BASH_SOURCE[0]}" )"
 [ -r "${SCRIPT_DIR}/env.sh" ] || SCRIPT_DIR="$( dirname "$(readlink -e "${BASH_SOURCE[0]}")" )"
 source "${SCRIPT_DIR}/env.sh"
 
-if [[ $# -eq 1 &&  $1 == 'confirm' ]]; then
-	echo sending shutdown now request
-	if [ $RHOST ]; then
-		ssh "$RHOST" "touch '$DPATH/work/shutdown.now'"
-	else
-		touch "$DPATH/work/shutdown.now"
-	fi
+function print_usage () {
+	SCRIPT_NAME="$( basename "${BASH_SOURCE[0]}" )"
+        echo "
+Usage:
+	$SCRIPT_NAME confirm
+
+	Forcefully shuts down the STARS cluster.
+"
+	exit ${1:-0}
+}
+
+########################################
+# Script
+########################################
+[[ $# -ne 1 ]] && print_usage 1
+[[ $1 == "-h" || $1 == "--help" || $1 != 'confirm' ]] && print_usage
+
+echo sending shutdown now request
+if [ -n "$RHOST" ]; then
+	ssh "$RHOST" "touch '$DPATH/work/shutdown.now'"
 else
-	echo "missing argument, type: ./shutdown confirm"
-	echo "to perform the shutdown"
-fi;
+	touch "$DPATH/work/shutdown.now"
+fi
