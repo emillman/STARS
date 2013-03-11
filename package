@@ -104,8 +104,6 @@ if [[ $PACK_AUTO ]]; then
 		chmod -R 700 bin
 	fi
 
-	chmod 700 shutdown
-	chmod 700 shutdownnow
 	chmod 700 stars
 	chmod 700 starsbg
 	chmod 700 mpicall
