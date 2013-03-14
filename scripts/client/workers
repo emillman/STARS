@@ -7,13 +7,13 @@
 
 source env.sh
 
-if [ $# -eq 1 ]; then
+if [ $# -eq 2 ]; then
 	echo setting process $1 to use $2 nodes
 	if [ $RHOST ]; then
-		
-		LINE="ssh $RHOST 'touch $RPATH/work/$1.$2.workers'"
+
+		LINE="ssh $RHOST 'touch $DPATH/work/$1.$2.workers'"
 	else
-		LINE="touch $RPATH/work/$1.$2.workers"
+		LINE="touch $DPATH/work/$1.$2.workers"
 	fi;
 	eval $LINE
 else

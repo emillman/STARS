@@ -7,8 +7,8 @@ source env.sh
 if [ $# -eq 1 ]; then
 	echo starting process workfile $1
 	if [ $RHOST ]; then
-		LINE1="scp $1 $RHOST:$DPATH/work/$1.tmp"
-		LINE2="ssh $RHOST 'mv $DPATH/work/$1.tmp $DPATH/work/$1'"
+		LINE1="scp $1 $RHOST:$DPATH/work/.$1"
+		LINE2="ssh $RHOST 'mv $DPATH/work/.$1 $DPATH/work/$1'"
 	else
 		LINE1="true"
 		LINE2="cp $1 $DPATH/work/"
@@ -23,8 +23,8 @@ if [ $# -eq 1 ]; then
 elif [ $# -eq 2  ]; then
 	echo starting process workfile $1/$2
 	if [ $RHOST ]; then
-		LINE1="scp $1/$2 $RHOST:$DPATH/work/$2.tmp"
-		LINE2="ssh $RHOST 'mv $DPATH/work/$2.tmp $DPATH/work/$2'"
+		LINE1="scp $1/$2 $RHOST:$DPATH/work/.$2"
+		LINE2="ssh $RHOST 'mv $DPATH/work/.$2 $DPATH/work/$2'"
 	else
 		LINE1="true"
 		LINE2="cp $1/$2 $DPATH/work/"
